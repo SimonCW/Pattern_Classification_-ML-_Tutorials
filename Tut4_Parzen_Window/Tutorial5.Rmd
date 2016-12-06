@@ -1,0 +1,82 @@
+---
+title: "Tutorial 5"
+author: "Markus Löning, Simon Weiß, Tamara Bogatzki"
+output: html_document
+---
+
+# Exercise 1
+##Preliminaries
+```{r}
+#install required packages if necessary (remove '#')
+#install.packages("triangle")
+#load required packages 
+library(triangle)
+```
+
+##Exercise 1a
+```{r}
+#Function that generates n random values from the triangle distribution. Alternatively just call the 'rtriangle' function directly
+rval_traiangle <- function(n, a, b, c) {
+  rval <- rtriangle(n,a,b,c)
+  return(rval)
+}
+
+```
+
+## Exercise 1b
+```{r}
+#DEFINING THE DENSITY ESTIMATION FUNCTION
+#h is the windows width, k the utizlied kernel {"gauss", "epanechnikov"}
+density_fun <- function (x, from, to, m, h, k){
+  x <- matrix(x)
+  n <- length(x) #number of observations  
+  x_center <- seq(from, to, length.out=m) #vector of equidistant kernel centers
+  
+  #Initializing storage matrices
+  g <- matrix(-777, n, m)
+  if(k=="gauss"){
+    #Setting up preliminary window function
+    g_fun <- function(x, x_center, h){
+      (1/(h*sqrt(2*pi)))*exp(-0.5*((x_center-x)/h)^2)
+    }
+    g <- lapply(x_center, function(i){g_fun(x, i, h)})
+    k_in <- as.matrix(unlist(lapply(g,sum)))
+    p <- (1/n)*k_in
+  }
+  
+  if(k=="epanechnikov"){
+    g<- sapply(x_center, function(i){
+      ifelse(abs(i-x)<=h,(3/(4*h))*(1-((i-x)/h)^2),0)})
+    k_in <- colSums(g)
+    p <- (1/n)*k_in
+   } 
+  
+    
+  
+return(list(p=p, x_centers=x_center, k_in=k_in)) #function output
+}
+
+
+
+```
+
+## Exercise 1c
+```{r}
+set.seed(123)
+n<-150
+a<-1
+b<-7
+c<-5
+samps <- rtriangle(n, a, b, c)
+
+est_gauss <- density_fun(samps,0, 10, 1000, 0.6, k="gauss")
+est_epan <- density_fun(samps,0, 10, 1000, 0.6, k="epanechnikov")
+
+#Show histogram of the random samples
+#hist(samps, freq= FALSE, breaks = 50, main="Triangle Distribution with Estimated Densities", xlab="X", xlim=range(0,10), ylim=range(0,.5))
+
+#Polot triangle pdf and line of our estimated density 
+curve(dtriangle(x, 1, 7, 5), from=0, to=10, xlab="x", ylab="y", col="red")
+lines(est_gauss$x_centers, est_gauss$p, col="blue", xlim=range(0,10))
+lines(est_epan$x_centers, est_epan$p, col="green", xlim=range(0,10))
+```

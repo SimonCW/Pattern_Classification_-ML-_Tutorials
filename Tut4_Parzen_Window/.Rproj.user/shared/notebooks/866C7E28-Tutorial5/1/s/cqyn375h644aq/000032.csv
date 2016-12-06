@@ -1,0 +1,8 @@
+"0","set.seed(123)"
+"0","n<-100000"
+"0","a<-1"
+"0","b<-7"
+"0","c<-5"
+"0","samps <- rtriangle(n, a, b, c)"
+"0","est_gauss <- density_fun(samps,0, 10, 1000, 0.6, k=""gauss"")"
+"0","hist(samps, freq= FALSE, breaks = 50, main=""Triangle Distribution with Estimated Densities"", xlab=""X"", xlim=range(0,10), ylim=range(0,.5))"

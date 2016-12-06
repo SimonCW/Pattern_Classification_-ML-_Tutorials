@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Tutorial 5\"\nauthor: \"Markus Löning, Simon Weiß, Tamara Bogatzki\"\noutput: html_document\n---\n\n# Exercise 1\n##Preliminaries\n```{r}\n#install required packages if necessary (remove '#')\n#install.packages(\"triangle\")\n#load required packages \nlibrary(triangle)\n```\n\n##Exercise 1a\n```{r}\n#Function that generates n random values from the triangle distribution. Alternatively just call the 'rtriangle' function directly\nrval_traiangle <- function(n, a, b, c) {\n  rval <- rtriangle(n,a,b,c)\n  return(rval)\n}\n\n```\n\n## Exercise 1b\n```{r}\n#DEFINING THE DENSITY ESTIMATION FUNCTION\n#h is the windows width, k the utizlied kernel {\"gauss\", \"epanechnikov\"} \ndensity_fun <- function (x, from, to, m, h, k){\n  x <- matrix(x)\n  n <- length(x) #number of observations  \n  x_center <- seq(from, to, length.out=m) #vector of equidistant kernel centers\n  \n  #Initializing storage matrices\n  g <- matrix(-777, n, m)\n  \n  if(k==\"gauss\"){\n    #Defining a preliminary window function\n    g_fun <- function(x, x_center, h){\n      (1/(h*sqrt(2*pi)))*exp(-0.5*((x_center-x)/h)^2) \n    }\n    g <- lapply(x_center, function(i){g_fun(x, i, h)})\n    k_in <- as.matrix(unlist(lapply(g,sum)))\n    p <- (1/n)*k_in\n  }\n  \n  if(k==\"epanechnikov\"){\n    #Defining a preliminary window function\n    g_fun <- function(x, x_center, h){\n      (3/(4*h))*(1-((x_center-x)/h)^2)\n    }\n    g <- ifelse(abs(unlist(lapply(x_center, function(x_center){x_center-x})))<=h, lapply(x_center, function(i){g_fun(x, i, h)}),0) #Window function\n    k_in <- colSums(g)\n    p <- (1/n)*k_in\n  }\n  \nreturn(list(p=p, x_centers=x_center, k_in=k_in)) #function output\n}\n\n\n\n```\n\n## Exercise 1c\n```{r}\nset.seed(123)\nn<-150\na<-1\nb<-7\nc<-5\nsamps <- rtriangle(n, a, b, c)\n\nest_gauss <- density_fun(samps,0, 10, 1000, 0.6, k=\"gauss\")\nest_epan <- density_fun(samps,0, 10, 1000, 0.6, k=\"epanechnikov\")\n\nhist(samps, freq= FALSE, breaks = 50, main=\"Triangle Distribution with Estimated Densities\", xlab=\"X\", xlim=range(0,10), ylim=range(0,.5))\nlines(est_gauss$x_centers, est_gauss$p, col=\"blue\", xlim=range(0,10))\n\n```",
+    "created" : 1480096062677.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3957720202",
+    "id" : "CC4BEA6B",
+    "lastKnownWriteTime" : 1480330797,
+    "last_content_update" : 1480333791966,
+    "path" : "C:/Users/weiss/OneDrive/01_Uni Bayreuth/02_Pattern_Recognition/Tuts/Tutorial5/Tutorial5.Rmd",
+    "project_path" : "Tutorial5.Rmd",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

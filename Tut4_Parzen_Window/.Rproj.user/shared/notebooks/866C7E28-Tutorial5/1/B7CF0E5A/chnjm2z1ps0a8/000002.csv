@@ -1,0 +1,5 @@
+"0","#Function that generates n random values from the triangle distribution. Alternatively just call the 'rtriangle' function directly"
+"0","rval_traiangle <- function(n, a, b, c) {"
+"0","  rval <- rtriangle(n,a,b,c)"
+"0","  return(rval)"
+"0","}"

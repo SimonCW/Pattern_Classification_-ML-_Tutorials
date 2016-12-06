@@ -1,0 +1,51 @@
+---
+title: "Tutorial 5a Solution"
+subtitle: "Pattern Recognition"
+author: "Markus Löning, Simon Weiß & Tamara Bogatzki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: html_document
+---
+### Exercise 1d.e
+The solution region is the skyblue region between the green and blue line. Explanation: The lines represent the boundaries of the given restrictions (the inequalities). For $g(x) \geq 0$ points on the line are part of the solution.
+```{r}
+a2=3
+a1=4
+
+rest1 = function(a1){a2=a1}
+rest2= function(a1){a2=a1/2}
+rest3 = function(a1){a2=-a1}
+rest4 = function(a1){a2=(-3/4)*a1}
+
+curve(rest1, from = -100, to = 100,  xlab="x", ylab="y", col="red", lwd=2);
+curve(rest2, from = -100, to = 100, col="blue", lwd=2, add=TRUE)
+curve(rest3, col="yellow", lwd=2, add=TRUE)
+curve(rest4, col="green", lwd=2, add=TRUE)
+
+cord.x <- c(-100,-100,0)
+cord.y <- c((-3/4)*-100,0,0)
+cord.y2 <- c(-50,0,0)
+polygon(cord.x, cord.y, col="skyblue")
+polygon(cord.x, cord.y2, col = "skyblue")
+
+```
+
+
+### Exercise 2d
+```{r}
+#sample data
+x1 <- 3 
+x2 <- 1 
+x3 <- -2 
+
+#normalise data
+x3 <- -x3
+x <- as.matrix(rbind(x1, x2, x3))
+x
+```
+
+
+### Exercise 2e
+```{r, eval=FALSE}
+
+```
+

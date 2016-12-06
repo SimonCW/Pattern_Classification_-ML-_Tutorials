@@ -1,0 +1,1 @@
+"0","lines(est_gauss$x_centers, est_gauss$p, col=""blue"", xlim=range(0,10))"

@@ -1,0 +1,4 @@
+"0","#install required packages if necessary (remove '#')"
+"0","#install.packages(""triangle"")"
+"0","#load required packages "
+"0","library(triangle)"
