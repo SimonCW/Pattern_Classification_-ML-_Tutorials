@@ -7,7 +7,7 @@ output: html_document
 ---
 ### Exercise 1d.e
 The solution region is the skyblue region between the green and blue line. Explanation: The lines represent the boundaries of the given restrictions (the inequalities). For $g(x) \geq 0$ points on the line are part of the solution.
-```{r}
+```{r, eval=FALSE}
 a2=3
 a1=4
 
@@ -31,7 +31,7 @@ polygon(cord.x, cord.y2, col = "skyblue")
 
 
 ### Exercise 2d
-```{r}
+```{r, eval=FALSE}
 #sample data
 x1 <- 3 
 x2 <- 1 
@@ -39,13 +39,32 @@ x3 <- -2
 
 #normalise data
 x3 <- -x3
-x <- as.matrix(rbind(x1, x2, x3))
-x
+
+#x vector
+y <- matrix(c(1, 1, 1, x1, x2, x3), ncol=3, byrow = TRUE)
+y
 ```
 
 
 ### Exercise 2e
 ```{r, eval=FALSE}
+perceptron.fun <- function(x, a0, eta){
+  a <- a0  #Set weighting matrix to initial input
+  J <- 1  #Set cost uequal to zero
+  
+  while(J != 0){
+    g <- t(a) %*% y
+    a <- a + eta * cbind(rowSums(y[, which(g<0)]))
+    J <- sum(-g[which(g<0)])
+  }
+ return(list(weight_vec=a, J=J))
+}
+  
 
+#Estimation
+a0 <- cbind(c(1,-4))  # Initial weight vector
+
+perceptron_est <- perceptron.fun(y, a0, eta=0.1)
+  
 ```
 
