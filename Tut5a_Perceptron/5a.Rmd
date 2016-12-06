@@ -51,13 +51,16 @@ y
 perceptron.fun <- function(x, a0, eta){
   a <- a0  #Set weighting matrix to initial input
   J <- 1  #Set cost uequal to zero
+  num_iter <- 1
   
   while(J != 0){
     g <- t(a) %*% y
-    a <- a + eta * cbind(rowSums(y[, which(g<0)]))
+    a <- a + eta * rowSums(as.matrix(y[, which(g<0)]))
     J <- sum(-g[which(g<0)])
+    J_hist[num_iter+1] <- J
+    num_iter <- num_iter + 1
   }
- return(list(weight_vec=a, J=J))
+ return(list(weight_vec=a, J=J, J_hist = J_hist, num_iter = num_iter))
 }
   
 
