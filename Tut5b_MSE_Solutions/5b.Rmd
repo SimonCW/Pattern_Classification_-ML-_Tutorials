@@ -5,4 +5,32 @@ author: "Markus LÃ¶ning, Simon WeiÃ & Tamara Bogatzki"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: html_document
 ---
+```{r, eval=FALSE}
+#sample data
+x1 <- 3 
+x2 <- 1 
+x3 <- -2 
 
+y <- matrix(c(1, 1, 1, x1, x2, x3), ncol=3, byrow = TRUE)
+
+#Normalise w2
+y[,3] <- y[,3]*-1
+
+relaxation_fun <- function(x, b, a0, eta){
+  a <- a0 # Set weight matrix to initial input
+  J <- 1 # Set cost unequal to 0
+  y_euc <- sqrt(sum(y^2))
+  num_iter <- 1
+  
+  while(J!=0){
+    g <- t(a) %*% y - b
+    a <- a * eta *  y %*% t((g/y_euc^2))))
+    
+  }
+  
+}
+```
+
+```{r, eval=FALSE}
+a0 <-  cbind(c(1,-4))
+```
