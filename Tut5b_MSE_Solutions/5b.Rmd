@@ -1,0 +1,8 @@
+---
+title: "Tutorial 5a Solution"
+subtitle: "Pattern Recognition"
+author: "Markus LÃ¶ning, Simon WeiÃ & Tamara Bogatzki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: html_document
+---
+
