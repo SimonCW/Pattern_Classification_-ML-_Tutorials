@@ -1,12 +1,18 @@
 ---
-  title: "Tutorial 7 Solution"
+title: "Tutorial 7 Solution"
 subtitle: "Pattern Recognition"
 author: "Markus Löning, Simon Weiß & Tamara Bogatzki"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: html_document
 ---
-###1a) Is it reasonable that a higher energy is sometimes accepted in stochastic simulated annealing? Why? Why does it converge? Compare to greedy algorithm.
 
+###1a) Is it reasonable that a higher energy is sometimes accepted in stochastic simulated annealing? Why? Why does it converge? Compare to greedy algorithm.
+With a greedy algorithm only configurations which lead to lower energy are accepted. However, since the change in energy depends only on nodes (locally) connected to node $i$ the greedy algorithm is likely to get caught in local minima.
+
+With stochastic simulated annealing, sometimes a configuration with higher energy $Eb$ is accepted. This is reasonable because it allows the system to "jump" to different areas of the energy landscape. Thus, avoiding to get caught in local minima. Generally, the probability of "jumps" to different areas decreases with "temperature" $T(k)$. 
+This also ensures that the alogrithm converges. With low $T$ (which decreases in $k$) the probability of accepting a configuration with higher energy decreases. Hence, the algorithm becomes more "greedy" witch decreasing temperature. 
+
+In the end, the configuration which yielded the lowest energy throught the algorithm is chosen.
 
 ###1b) Stochastic Simulated Annealing
 ```{r}
@@ -19,6 +25,7 @@ anneal <- function(w, s1, t1, c, max_iter){
   t <- t1 #initial temperature
   t_hist <- t1 #initialise storage vector for temperature hisbtory
   E_hist <- -0.5 * s %*% w %*% s #calculate initial energy + initialise energy history storage vector
+  s_hist <- s1 #history of configurations. Allows to extract configuration with lowest energy throught the algorithm
   
   #Loop until max_iter is reached
   while (num_iter < max_iter) {
@@ -41,10 +48,16 @@ anneal <- function(w, s1, t1, c, max_iter){
     #Annealing schedule
     t <- c*t 
     t_hist[num_iter + 1] <- t
+    s_hist <- cbind(s_hist, s)
   }
 
+#Determine the configuration with the lowest energy achieved throught the algorithm
+s <- s_hist[,which.min(E_hist)]
+#Associated lowest energy achieved
+E <- min(E_hist)
+  
   #Function outputs
-  return(list(states = s, energy = E, energy_hist = E_hist, t_hist = t_hist, num_iter = num_iter))
+  return(list(states = s, energy = E, energy_hist = E_hist, t_hist = t_hist, num_iter = num_iter, s_hist <- s_hist))
 } 
 ```
 
@@ -92,6 +105,9 @@ anneal.det <- function(w, s1, t1, c, max_iter){
     l <- w[i,-i] %*% s[-i]
     #Adjust state according to response function
     s[i] <- tanh(l/t)
+    #Force states to be non-zero
+    if (s[i] == 0) {
+      ifelse(s_hist[i,num_iter] > 0, s[i] <- 1, s[i] <- -1)}
     #Calculate total energy of the system
     E <- -0.5 * s %*% w %*% s
     E_hist[num_iter + 1] <- E
@@ -100,6 +116,11 @@ anneal.det <- function(w, s1, t1, c, max_iter){
     t_hist[num_iter + 1] <- t
     s_hist <- cbind(s_hist, s)
   }
+  
+#Determine the configuration with the lowest energy achieved throught the algorithm
+s <- s_hist[,which.min(E_hist)]
+#Associated lowest energy achieved
+E <- min(E_hist)
 
   #Function outputs
   return(list(states = s, energy = E, energy_hist = E_hist, t_hist = t_hist, num_iter = num_iter, s_hist = s_hist))
