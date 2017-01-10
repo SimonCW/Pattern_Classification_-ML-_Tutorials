@@ -1,0 +1,118 @@
+---
+  title: "Tutorial 7 Solution"
+subtitle: "Pattern Recognition"
+author: "Markus Löning, Simon Weiß & Tamara Bogatzki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: html_document
+---
+###1a) Is it reasonable that a higher energy is sometimes accepted in stochastic simulated annealing? Why? Why does it converge? Compare to greedy algorithm.
+
+
+###1b) Stochastic Simulated Annealing
+```{r}
+#Stochastic simulated annealing
+anneal <- function(w, s1, t1, c, max_iter){
+  
+  #initialise values
+  num_iter <- 0 #starting iteration
+  s <- s1 #initial states
+  t <- t1 #initial temperature
+  t_hist <- t1 #initialise storage vector for temperature hisbtory
+  E_hist <- -0.5 * s %*% w %*% s #calculate initial energy + initialise energy history storage vector
+  
+  #Loop until max_iter is reached
+  while (num_iter < max_iter) {
+    num_iter <- num_iter + 1 #increase iteration counter by 1
+    i <- sample(length(s), 1) #randomly select 1 state
+    #Calculate "local" energy
+    Ea <- -0.5*s[i]*w[i,-i] %*% s[-i]
+    Eb <- -Ea #energy with alternative state where s[i] = -s[i]
+    #Adjust states
+    if (Eb<Ea){
+      s[i]<- -s[i]
+    } else {             #Eb higher energy than Ea
+        if(exp(-(Eb-Ea)/t) > runif(1, 0, 1)){
+        s[i] <- -s[i]
+        }
+    }
+    #Calculate total energy of the system
+    E <- -0.5 * s %*% w %*% s
+    E_hist[num_iter + 1] <- E
+    #Annealing schedule
+    t <- c*t 
+    t_hist[num_iter + 1] <- t
+  }
+
+  #Function outputs
+  return(list(states = s, energy = E, energy_hist = E_hist, t_hist = t_hist, num_iter = num_iter))
+} 
+```
+
+```{r}
+#weights: symmetric, with self-feedback terms = 0
+w <- matrix(c(0, 5, -3, 4, 4, 1, 
+              5, 0, -1, 2, -3, 1,
+              -3, -1, 0, 2, 2, 0, 
+              4, 2, 2, 0, 3, -3,
+              4, -3, 2, 3, 0, 5,
+              1, 1, 0, -3, 5, 0),
+            nrow = 6, ncol = 6)
+
+#initial states
+s1 <- c(1, -1, -1, 1, -1, 1)
+
+#algorithm parameters
+t1 <- 10 #high starting temperature
+c <- 0.9 #cooling parameter
+
+set.seed(123) #set seed for random polling
+anneal_est <- anneal(w, s1, t1, c, max_iter = 100)
+```
+
+
+
+###1d) Deterministic Simulated Annealing
+```{r}
+#Deterministic simulated annealing
+anneal.det <- function(w, s1, t1, c, max_iter){
+  
+  #initialise values
+  num_iter <- 0 #starting iteration
+  s <- s1 #initial states
+  t <- t1 #initial temperature
+  t_hist <- t1 #initialise storage vector for temperature history
+  E_hist <- -0.5 * s %*% w %*% s #calculate initial energy + initialise energy history storage vector
+  s_hist <- s1
+  
+  #Loop until max_iter is reached
+  while (num_iter < max_iter) {
+    num_iter <- num_iter + 1 #increase iteration counter by 1
+    i <- sample(length(s), 1) #randomly select 1 state
+    #Calculate force exerted on node i
+    l <- w[i,-i] %*% s[-i]
+    #Adjust state according to response function
+    s[i] <- tanh(l/t)
+    #Calculate total energy of the system
+    E <- -0.5 * s %*% w %*% s
+    E_hist[num_iter + 1] <- E
+    #Annealing schedule
+    t <- c*t 
+    t_hist[num_iter + 1] <- t
+    s_hist <- cbind(s_hist, s)
+  }
+
+  #Function outputs
+  return(list(states = s, energy = E, energy_hist = E_hist, t_hist = t_hist, num_iter = num_iter, s_hist = s_hist))
+} 
+
+```
+
+```{r}
+set.seed(123)
+anneal.det_est <- anneal.det(w, s1, t1, c, max_iter = 100)
+```
+
+
+
+
+
