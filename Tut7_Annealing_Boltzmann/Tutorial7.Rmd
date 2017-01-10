@@ -133,7 +133,14 @@ set.seed(123)
 anneal.det_est <- anneal.det(w, s1, t1, c, max_iter = 100)
 ```
 
+##Exercise 2: Boltzmann learning
+###2a
+Stochastic Boltzmann learning is a method to learn the appropriate weights for classification for a network like the one used in Exercise 1. The weight update is determined by the learning rate, temperature, and gradient descent in the relative entropy. This minimizes the Kullback-Leibler divergence between the actual and desired probability distribution of a given state.
 
+The teacher component (also learning component) is the correlation of the variables $s_i$ and $s_j$ when the visible units are held fixed (clamped). The name comes from the fact that the visible units are held to values given by the teacher (labeld training pattern).
+In the student component (or unlearning component), in contrast, the variables are free to vary. This reduces spurious correlations between the units. Spurious correlations are those correlations that are not due to the presented training patterns. The desired weights are achieved if the student and teacher component are equal.
 
+###2b
+Pattern completition aims to estimate the full pattern from just a part of that pattern; e.g. estimate the true hand written number from an incomplete picture of a number. Instead of classifying the image of a hand written symbol as one of 10 possible numbers, the algorithm tries to complete the drawing on the image. This is related to classification with missing features. For both cases Boltzmann training is the preferred method. When classfying with missing features, input units corresponding to missing input features are allowed to vary. They are treated as unclamped hidden units instead of clamped visible input units. As a result, those units assume values consistent with the rest of the input pattern and the current state of the network during annealing. In pattern completion, when a deficient pattern is presented, the units in a subset of the visible unites are clamped to the components of the partial pattern. After annealing the network the estimated unkown features appear on the remaining visibile units.
 
 
