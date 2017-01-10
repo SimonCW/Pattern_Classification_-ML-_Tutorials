@@ -5,32 +5,89 @@ author: "Markus LÃ¶ning, Simon WeiÃ & Tamara Bogatzki"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: html_document
 ---
-```{r, eval=FALSE}
+```{r}
+#Preliminaries
+library(MASS)
+```
+###Exercise 2b
+```{r}
+relax_fun <- function(y, b, a0, eta){
+  a <- a0 # Set weight matrix to initial input
+  J <- 1 # Set cost unequal to 0
+  J_hist <- 1
+  num_iter <-0
+  y_euc <- apply(y, 2, function(i){sqrt(sum(i^2))})
+  
+  while(J != 0){
+    g <- t(a) %*% y - b #Criterion function. Samples where g<0 are missclassified
+    i <- which(g<0) #Index of misclassified samples
+    a <- a - eta *  as.matrix(y[,i]) %*% as.matrix((g/y_euc^2)[i]) #Vectorised update
+    J <- 0.5*sum((g^2/y_euc^2)[i]) #Cost of this iteration
+    J_hist[num_iter] <- J #History of cost
+    num_iter <- num_iter +1 #Update iteration counter
+  }
+  return(list(a=a, J_hist=J_hist, num_iter=num_iter))
+}
+```
+
+```{r}
 #sample data
 x1 <- 3 
 x2 <- 1 
 x3 <- -2 
-
 y <- matrix(c(1, 1, 1, x1, x2, x3), ncol=3, byrow = TRUE)
 
 #Normalise w2
 y[,3] <- y[,3]*-1
 
-relaxation_fun <- function(x, b, a0, eta){
-  a <- a0 # Set weight matrix to initial input
-  J <- 1 # Set cost unequal to 0
-  y_euc <- sqrt(sum(y^2))
-  num_iter <- 1
-  
-  while(J!=0){
-    g <- t(a) %*% y - b
-    a <- a * eta *  y %*% t((g/y_euc^2))))
-    
-  }
-  
-}
+#Set initial weight vector a0, "margin" b, and learning rate eta.
+a0 <-  cbind(c(1,-4))
+b <- -4
+eta <- 1.5
+
+#Calculate solution vector using the relaxation algorithm
+relax_est <- relax_fun(y, b, a0, eta)
+
 ```
 
-```{r, eval=FALSE}
-a0 <-  cbind(c(1,-4))
+###3a
+```{r}
+#Samples x1 for w1 and x2 for w2
+x1 <- c(1.5, -1.5, -2, -2.5, -3, -3.5, -4)
+x2 <- c(2, 2.5, 3, 3.5, 4, 4.5)
+x <- c(x1, x2)
+
+#Homogenise samples and save in one matrix
+Y <- matrix(c(rep(1, length(x)), x), nrow = 2, byrow = TRUE)
+
+#Save homogenized samples for later in transposed form
+Yh <- t(Y)
+
+#Normalise samples from w2 category
+Y[, (length(x1)+1):length(x)] <- Y[, (length(x1)+1):length(x)] * (-1)
+
+#Transpose y for easier MSE interpretation
+Y <- t(Y)
+Y
+
+```
+
+###3b
+```{r, eval=FALSE, echo=FALSE}
+
+
+#Initialize b Matrix
+b <- matrix(rep(1, dim(y)[1]), ncol = 1)
+
+#Closed form solution for a
+a <- ginv(t(Y) %*% Y) %*% t(Y) %*% b
+a
+```
+
+###3c
+```{r}
+par(pty="s")
+plot(Yh[1:length(x1),], type = "p", xlim = range(-5,5), ylim = range(-5,5), xlab = "y1", ylab = "y2", col=c(2), main = "Homogenised Sample with Solution Vector", asp = 1)
+points(Yh[-(1:length(x1)),], col=c(3))
+
 ```
