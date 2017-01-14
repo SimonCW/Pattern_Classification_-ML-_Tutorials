@@ -1,0 +1,30 @@
+---
+title: "Tutorial 8 Solution"
+subtitle: "Pattern Recognition"
+author: "Markus Löning, Simon Weiß & Tamara Bogatzki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: html_document
+---
+
+#Exercise1  
+###1a) Advantages of binary trees
+
+Every decision tree with branching factor $> 2$ ca be expressed as a binary decision tree. Thus, binary decsion trees have high expressive power. Importantly, the decision at any node of the binary tree can be expressed as a one-dimensional optimization porblem. For trees with branching factor $> 2$ higher dimensional optimization is required. This is, generally, harder to do. Binary trees are comparatively simple to train. 
+
+
+
+#Exercise2
+###2a) Importance of impurity for training. Does this always achieve the best result?
+
+The impurity at node $N$ is a mathematical measure of the impurity of classification at the given node. It is lowest ($0$) if all the patterns that reach node $N$ are of the same category and highest if the categories are equally represented at node $N$. Several mathematical formalizations of impurity exist. In training the impuritiy measure $i(N)$ is used to find the "best" test value $s$ for the property test $T$ at node $N$. "Best", here, is defined as the value $s$ for $T$ that decreases the impurity as much as possible. The drop in impurity is defined by: 
+\begin{equation}
+ \Delta i(N) = i(N) - P_L i(N_L) - (1-P_L) i(N_R)
+\end{equation}
+Where $N_L$ and $N_R$ are the left and right descendent nodes and $i(.)$ their impurities. $P_L$ is the fraction of patterns at node N that will go to $N_L$. The "best" choice (in the sense of minimizing impurity) is then the test value $s$ that maximizes the drop in impuirity $\Delta i(T)$. For nominal attributes extensive or exhaustive search may be requried to find the rule maximizing $\Delta i$.
+
+The optimization described above is local (at node $N$), therefore, there is no gurantee that a global optimum will be reached. This also means that after training we mustn't find the smallest possible tree. Further, the impurity at a leaf node is not necessarily $0$ since two patterns from distinct categories may have the same attribute description (e.g. we might be unaware of further attributes).
+
+
+###2b)
+  
+If we grow the tree fully until the overall impurity is close to zero it is very likely that we may have overfit the data. This means that our tree fits the training data almost perfectly but doesn't generalize well to new samples. Therefore, an overfit tree will likely achieve higher classifcation error than a tree that fits the training data more "loosely". However, if training is stopped too early (with still high error on the training data) performance may also suffer. Therefore, a "sweet spot" has to be found between overfitting and underfitting the training data (typically with methods such as cross-validation).
