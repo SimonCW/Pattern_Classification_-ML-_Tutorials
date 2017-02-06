@@ -1,0 +1,59 @@
+---
+title: "Tutorial 10b Solution"
+subtitle: "Pattern Recognition"
+author: "Markus Löning, Simon Weiß & Tamara Bogatzki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: html_document
+---
+
+#Exercise3  
+###3a) Local Minima
+One could start the algorithm multiple times with different starting points (clusters) and then select the one that extremizes the criterion function. 
+
+One could implement a simulated annealing inspired cooling schedule. More specifically, with decreasing probability (decreasing in temperature) move a sample to a different cluster even if it is disadvantageous for extremizing the criterion function.
+
+###3b) k-mean or iterative optimization if c is unknonw?
+Guess c. 
+
+Repeat the clustering procedure for c=1, c=2,..., and so on. See how the criterion function $J_e$ decreases with c. If the camples are really grouped into $\hat{c}$ clusters then one would expect $J_c$ to decrease rapidly until $c=\hat{c}$ and slowly afterwards (for e.g. squared error criterion). More formally one can use a measure of goodnes of fit that expresses how well the given $c$-clusters match the data. One would like to choose that that $c$ for which $J(c+1)$ is not significantly smaller than $J(c)$. Thesting whether $J(c+1)$ is \textit{signifcantly} does not follow any well established statistical properties. However, some criterion is better than none, so one could use a sum of squarred-errror criterion and calculate critical values.
+
+###3c)
+All trainig samples are presented. 
+
+Sequential training: add the samples one by one (increasing the training data iteratively) and recalculate the mean (for k-means) or the criterion function (for iterativ optim.)
+
+Stochastic training: proceed like in sequential training but choose next sample randomly
+
+Online training: Doesn't make sense at all for clusterin in my opinion.
+
+###3d)
+
+```{r}
+#preliminaries
+library(ggplot2)
+rm(list = ls())
+setwd("C:/Users/weiss/OneDrive/01_Uni Bayreuth/02_Pattern_Recognition/Pattern_Classification_-ML-_Tutorials/Tut10b_Clustering")
+
+#read in data
+samples <- read.table(file = "samples.txt", header = FALSE)
+c <- c(2,3,4,5)
+
+#visualise data
+ggplot() + geom_point(data= samples, aes(V1, V2))
+
+#1.farthest-neighbour clustering
+dmaxmat <- dist(as.matrix(samples), method = "maximum")
+fnclust <- hclust(dmaxmat, method = "complete")
+fnclust2 <- cutree(fnclust, 2)
+fnclust3 <- cutree(fnclust, 3)
+fnclust4 <- cutree(fnclust, 4)
+fnclust5 <- cutree(fnclust, 5)
+
+solution <- cbind(samples,fnclust2, fnclust3, fnclust4, fnclust5)
+
+ggplot() + geom_point(data= solution, aes(V1, V2), col= fnclust2) +ggtitle("c=2") + labs(x="x", y="y")
+ggplot() + geom_point(data= solution, aes(V1, V2), col= fnclust3)+ggtitle("c=3") + labs(x="x", y="y")
+ggplot() + geom_point(data= solution, aes(V1, V2), col= fnclust4)+ggtitle("c=4") + labs(x="x", y="y")
+ggplot() + geom_point(data= solution, aes(V1, V2), col= fnclust5)+ggtitle("c=5") + labs(x="x", y="y")
+```
+
